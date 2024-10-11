@@ -1,0 +1,45 @@
+[
+  {
+    "title": "Main Task 1",
+    "status": "active",
+    "description": "This is the first main task",
+    "deadline": "2024-12-31T23:59:59",
+    "subtasks": [
+      {
+        "title": "Subtask 1.1",
+        "status": "active",
+        "description": "This is the first subtask of Task 1"
+      },
+      {
+        "title": "Subtask 1.2",
+        "status": "inactive",
+        "description": "This is the second subtask of Task 1"
+      }
+    ]
+  },
+  {
+    "title": "Main Task 2",
+    "status": "completed",
+    "description": "This is the second main task",
+    "deadline": "2024-11-15T12:00:00",
+    "subtasks": [
+      {
+        "title": "Subtask 2.1",
+        "status": "completed",
+        "description": "This is the first subtask of Task 2"
+      },
+      {
+        "title": "Subtask 2.2",
+        "status": "completed",
+        "description": "This is the second subtask of Task 2"
+      }
+    ]
+  },
+  {
+    "title": "Main Task 3",
+    "status": "inactive",
+    "description": "This is the third main task",
+    "deadline": null,
+    "subtasks": []
+  }
+]

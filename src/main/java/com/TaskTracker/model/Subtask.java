@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Task {
+public class Subtask {
 
     //required columns
 
@@ -27,6 +27,9 @@ public class Task {
     @Column(nullable = false)
     private TaskStatus status;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "task_id")
+    private Task parentTask;
 
 
     //optional columns
@@ -34,16 +37,5 @@ public class Task {
     @Column(nullable = true)
     private String description;
 
-    @Column(nullable = true)
-    private Date deadline;
-
-    //tasks can contain/consist of subtasks
-    @OneToMany(mappedBy = "parentTask", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Column(nullable = true)
-    @OrderColumn(name = "subtask_order") // Stores the order in a separate column
-    private List<Subtask> subtasks = new ArrayList<>();
-
 
 }
-
-

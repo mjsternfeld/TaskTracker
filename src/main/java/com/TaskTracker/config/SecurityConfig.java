@@ -19,10 +19,14 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity in testing
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/h2-console/**")) // Disable CSRF only for H2 console
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/h2-console/**").permitAll() // Allow access to H2 console
                         .requestMatchers("/hello").permitAll() // Allow public access to the /hello endpoint
-                        .anyRequest().authenticated()); // Require authentication for other requests
+                        .anyRequest().authenticated()) // Require authentication for other requests
+                .headers(headers -> headers
+                        .frameOptions(frameOptions -> frameOptions.sameOrigin())); // Updated frame options for H2
 
         return http.build();
     }
