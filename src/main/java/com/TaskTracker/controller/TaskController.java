@@ -58,6 +58,14 @@ public class TaskController {
 
     //TODO: update
 
+    @PutMapping("/update_task")
+    public ResponseEntity<?> updateTask(@RequestBody Task task){
+        Task updatedTask = service.updateTask(task);
+        if(updatedTask == null)
+            return ResponseEntity.notFound().build();
+        else
+            return ResponseEntity.ok(updatedTask);
+    }
 
 
 
