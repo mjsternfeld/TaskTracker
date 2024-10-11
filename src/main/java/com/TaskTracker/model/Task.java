@@ -1,5 +1,6 @@
 package com.TaskTracker.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,7 +20,7 @@ public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(nullable = false)
     private String title;
@@ -40,7 +41,8 @@ public class Task {
     //tasks can contain/consist of subtasks
     @OneToMany(mappedBy = "parentTask", cascade = CascadeType.ALL, orphanRemoval = true)
     @Column(nullable = true)
-    @OrderColumn(name = "subtask_order") // Stores the order in a separate column
+    @OrderColumn(name = "subtask_order") //the order of subtasks is stored automatically in the subtask_order column
+    @JsonManagedReference //this indicates this side of the relationship is the parent
     private List<Subtask> subtasks = new ArrayList<>();
 
 

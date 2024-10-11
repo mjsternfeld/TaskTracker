@@ -1,5 +1,6 @@
 package com.TaskTracker.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,7 +20,7 @@ public class Subtask {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer subtaskId;
 
     @Column(nullable = false)
     private String title;
@@ -27,9 +28,12 @@ public class Subtask {
     @Column(nullable = false)
     private TaskStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "task_id")
+
+    @ManyToOne
+    @JoinColumn(name = "parent_task_id", nullable = false) //Foreign key to Task. Needs to be set manually.
+    @JsonBackReference //this indicates this side of the relationship is the child
     private Task parentTask;
+
 
 
     //optional columns

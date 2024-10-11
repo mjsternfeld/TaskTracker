@@ -1,29 +1,67 @@
 package com.TaskTracker.controller;
 
+import com.TaskTracker.model.Subtask;
 import com.TaskTracker.model.Task;
 import com.TaskTracker.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/tasks")
 public class TaskController {
 
     @Autowired
     public TaskService service;
 
-    @RequestMapping("/")
-    public String greet(){
-        return "hello world";
+    //read
+
+    @GetMapping("/get_tasks")
+    public ResponseEntity<List<Task>> getAllTasks(){
+        return ResponseEntity.ok(service.getAllTasks());
     }
 
-    @GetMapping("/tasks")
-    public List<Task> getAllTasks(){
-        return service.getAllTasks();
+    @GetMapping("/get_task{id}")
+    public ResponseEntity<Task> getTaskByID(@PathVariable int id){
+        Optional<Task> task = service.getTaskById(id);
+        if(task.isPresent())
+            return ResponseEntity.ok(task.get());
+        else
+            return ResponseEntity.notFound().build();
     }
+
+
+    //create
+
+    @PostMapping("/import_tasks")
+    public ResponseEntity<?> importTasks(@RequestBody List<Task> tasks){
+        List<Task> savedTasks = service.saveTasks(tasks);
+
+
+
+        return ResponseEntity.ok(savedTasks); //return saved tasks as response
+    }
+
+    @PostMapping("/import_task")
+    public ResponseEntity<?> importTasks(@RequestBody Task task){
+        Task savedTask = service.saveTask(task);
+
+
+
+
+        return ResponseEntity.ok(savedTask); //return saved tasks as response
+    }
+
+
+    //TODO: update
+
+
+
+
+    //TODO: delete
+
 
 }

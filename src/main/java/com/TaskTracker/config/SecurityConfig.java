@@ -20,8 +20,10 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/h2-console/**")) // Disable CSRF only for H2 console
+                        .ignoringRequestMatchers("/h2-console/**", "/api/tasks/**")) // Disable CSRF only for H2 console
+
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/api/tasks/**").permitAll() // Allow public access to the /hello endpoint
                         .requestMatchers("/h2-console/**").permitAll() // Allow access to H2 console
                         .requestMatchers("/hello").permitAll() // Allow public access to the /hello endpoint
                         .anyRequest().authenticated()) // Require authentication for other requests
@@ -35,6 +37,9 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // Allow React app origin
+
+        configuration.setAllowedOrigins(Arrays.asList("*")); // Allow ALL origins - TODO: change this later
+
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true); // Allow credentials
