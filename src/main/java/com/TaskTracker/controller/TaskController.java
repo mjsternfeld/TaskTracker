@@ -70,6 +70,12 @@ public class TaskController {
 
 
     //TODO: delete
+    @DeleteMapping("/delete_task{id}")
+    public ResponseEntity<?> deleteTask(@PathVariable int id){
+        service.deleteTask(id);
+        return ResponseEntity.ok().build();
+    }
+
 
 
 }

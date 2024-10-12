@@ -1,3 +1,5 @@
+/*
+
 package com.TaskTracker.config;
 
 import org.springframework.context.annotation.Bean;
@@ -36,9 +38,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // Allow React app origin
-
-        configuration.setAllowedOrigins(Arrays.asList("*")); // Allow ALL origins - TODO: change this later
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:3000/viewTasks")); // Allow React app origin
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
@@ -49,3 +49,6 @@ public class SecurityConfig {
         return source;
     }
 }
+
+
+ */
