@@ -16,6 +16,7 @@ public class TaskService {
 
     @Autowired
     private TaskRepo taskRepo;
+    @Autowired
     private SubtaskRepo subtaskRepo;
 
     //read

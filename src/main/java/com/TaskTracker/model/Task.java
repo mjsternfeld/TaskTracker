@@ -14,19 +14,21 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS) //this is so recurring tasks end up in a separate table
 public class Task {
 
     //required columns
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "task_seq")
+    @SequenceGenerator(name = "task_seq", sequenceName = "task_sequence", allocationSize = 1)
     private Integer id;
 
     @Column(nullable = false)
     private String title;
 
     @Column(nullable = false)
-    private TaskStatus status;
+    private TaskStatus status = TaskStatus.inactive;
 
     @Column(nullable = false)
     private boolean isTemplate = false;

@@ -1,6 +1,5 @@
 package com.TaskTracker.controller;
 
-import com.TaskTracker.model.Subtask;
 import com.TaskTracker.model.Task;
 import com.TaskTracker.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
