@@ -19,9 +19,15 @@ public class TaskController {
 
     //read
 
+    //without templates!
     @GetMapping("/get_tasks")
     public ResponseEntity<List<Task>> getAllTasks(){
         return ResponseEntity.ok(service.getAllTasks());
+    }
+
+    @GetMapping("/get_templates")
+    public ResponseEntity<List<Task>> getAllTemplates(){
+        return ResponseEntity.ok(service.getAllTemplates());
     }
 
     @GetMapping("/get_task{id}")
@@ -39,24 +45,17 @@ public class TaskController {
     @PostMapping("/import_tasks")
     public ResponseEntity<?> importTasks(@RequestBody List<Task> tasks){
         List<Task> savedTasks = service.saveTasks(tasks);
-
-
-
         return ResponseEntity.ok(savedTasks); //return saved tasks as response
     }
 
     @PostMapping("/import_task")
     public ResponseEntity<?> importTasks(@RequestBody Task task){
         Task savedTask = service.saveTask(task);
-
-
-
-
         return ResponseEntity.ok(savedTask); //return saved tasks as response
     }
 
 
-    //TODO: update
+    //update
 
     @PutMapping("/update_task")
     public ResponseEntity<?> updateTask(@RequestBody Task task){
@@ -69,7 +68,7 @@ public class TaskController {
 
 
 
-    //TODO: delete
+    //delete
     @DeleteMapping("/delete_task{id}")
     public ResponseEntity<?> deleteTask(@PathVariable int id){
         service.deleteTask(id);

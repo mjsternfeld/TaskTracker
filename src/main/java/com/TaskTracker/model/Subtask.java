@@ -28,7 +28,6 @@ public class Subtask {
     @Column(nullable = false)
     private TaskStatus status;
 
-
     @ManyToOne
     @JoinColumn(name = "parent_task_id", nullable = false) //Foreign key to Task. Needs to be set manually.
     @JsonBackReference //this indicates this side of the relationship is the child
