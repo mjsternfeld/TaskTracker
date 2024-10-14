@@ -33,6 +33,8 @@ public class Task {
     @Column(nullable = false)
     private boolean isTemplate = false;
 
+    @Column(nullable = false)
+    private Integer userId = 0; //for later, when adding user accounts
 
     //optional columns
 
