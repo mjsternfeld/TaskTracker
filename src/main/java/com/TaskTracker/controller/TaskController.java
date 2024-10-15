@@ -3,6 +3,7 @@ package com.TaskTracker.controller;
 import com.TaskTracker.model.Task;
 import com.TaskTracker.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,64 +17,45 @@ public class TaskController {
     @Autowired
     public TaskService service;
 
-    //read
 
-    //without templates!
-    @GetMapping("/get_tasks")
-    public ResponseEntity<List<Task>> getAllTasks(){
+    //create
+    @PostMapping
+    public ResponseEntity<Task> createTask(@RequestBody Task task) {
+        Task savedTask = service.saveTask(task);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedTask); // Return saved task with a 201 status
+    }
+
+    //read
+    @GetMapping
+    public ResponseEntity<List<Task>> getAllTasks() {
         return ResponseEntity.ok(service.getAllTasks());
     }
 
-    @GetMapping("/get_templates")
-    public ResponseEntity<List<Task>> getAllTemplates(){
+    @GetMapping("/templates")
+    public ResponseEntity<List<Task>> getAllTemplates() {
         return ResponseEntity.ok(service.getAllTemplates());
     }
 
-    @GetMapping("/get_task{id}")
-    public ResponseEntity<Task> getTaskByID(@PathVariable int id){
+    @GetMapping("/{id}")
+    public ResponseEntity<Task> getTaskById(@PathVariable int id) {
         Optional<Task> task = service.getTaskById(id);
-        if(task.isPresent())
-            return ResponseEntity.ok(task.get());
-        else
-            return ResponseEntity.notFound().build();
-    }
-
-
-    //create
-
-    @PostMapping("/import_tasks")
-    public ResponseEntity<?> importTasks(@RequestBody List<Task> tasks){
-        List<Task> savedTasks = service.saveTasks(tasks);
-        return ResponseEntity.ok(savedTasks); //return saved tasks as response
-    }
-
-    @PostMapping("/import_task")
-    public ResponseEntity<?> importTasks(@RequestBody Task task){
-        Task savedTask = service.saveTask(task);
-        return ResponseEntity.ok(savedTask); //return saved tasks as response
+        return task.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
 
     //update
-
-    @PutMapping("/update_task")
-    public ResponseEntity<?> updateTask(@RequestBody Task task){
+    @PutMapping("/{id}")
+    public ResponseEntity<Task> updateTask(@PathVariable int id, @RequestBody Task task) {
+        task.setId(id);
         Task updatedTask = service.updateTask(task);
-        if(updatedTask == null)
-            return ResponseEntity.notFound().build();
-        else
-            return ResponseEntity.ok(updatedTask);
+        return updatedTask != null ? ResponseEntity.ok(updatedTask) : ResponseEntity.notFound().build();
     }
-
 
 
     //delete
-    @DeleteMapping("/delete_task{id}")
-    public ResponseEntity<?> deleteTask(@PathVariable int id){
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTask(@PathVariable int id) {
         service.deleteTask(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build(); // Returns 204 No Content
     }
-
-
-
 }
