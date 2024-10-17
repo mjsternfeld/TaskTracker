@@ -15,6 +15,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class RecurringTaskService {
@@ -59,13 +60,17 @@ public class RecurringTaskService {
 
 
     //create
-    public RecurringTask saveRecTask(RecurringTask rt){
+    public RecurringTask saveRecTask(RecurringTask rt, String username){
+        rt.setUsername(username);
         return recTaskRepo.save(rt);
     }
 
     //read
-    public List<RecurringTask> getAllRecTasks() {
-        return recTaskRepo.findAll();
+    public List<RecurringTask> getAllRecTasks(String username) {
+        List<RecurringTask> unfilteredList = recTaskRepo.findAll();
+        return unfilteredList.stream()
+                .filter(recurringTask -> recurringTask.getUsername().equals(username))
+                .collect(Collectors.toList());
     }
 
     public RecurringTask getRecTaskById(int id) {

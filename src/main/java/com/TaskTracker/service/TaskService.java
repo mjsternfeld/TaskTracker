@@ -22,13 +22,14 @@ public class TaskService {
     //read
 
     //no templates! just "normal" tasks
-    public List<Task> getAllTasks(){
+
+    //returns all tasks associated with the user corresponding to the userId
+    public List<Task> getAllTasks(String username){
         List<Task> unfilteredTasks = taskRepo.findAll();
         //filter with stream api
-        List<Task> nonTemplateTasks = unfilteredTasks.stream()
-                .filter(task -> !task.isTemplate())
+        return unfilteredTasks.stream()
+                .filter(task -> !task.isTemplate() && task.getUsername().equals(username))
                 .collect(Collectors.toList());
-        return nonTemplateTasks;
     }
 
     public Optional<Task> getTaskById(int id) {
@@ -36,11 +37,12 @@ public class TaskService {
     }
 
     //no "normal" tasks, just templates
-    public List<Task> getAllTemplates(){
+    //returns all templates associated with the user corresponding to the userId
+    public List<Task> getAllTemplates(String username){
         List<Task> unfilteredTasks = taskRepo.findAll();
         //filter with stream api
         List<Task> nonTemplateTasks = unfilteredTasks.stream()
-                .filter(task -> task.isTemplate())
+                .filter(task -> task.isTemplate() && task.getUsername().equals(username))
                 .collect(Collectors.toList());
         return nonTemplateTasks;
     }
@@ -49,18 +51,21 @@ public class TaskService {
 
     //create
 
-    public Task saveTask(Task task){
+    public Task saveTask(Task task, String username){
         //manually set subtask's references to their parent task
+        task.setUsername(username);
         for(Subtask subtask : task.getSubtasks())
             subtask.setParentTask(task);
         return taskRepo.save(task);
     }
 
-    public List<Task> saveTasks(List<Task> tasks){
+    public List<Task> saveTasks(List<Task> tasks, String username){
         //manually set subtask's references to their parent tasks
-        for(Task task : tasks)
-            for(Subtask subtask : task.getSubtasks())
+        for(Task task : tasks) {
+            task.setUsername(username);
+            for (Subtask subtask : task.getSubtasks())
                 subtask.setParentTask(task);
+        }
         return taskRepo.saveAll(tasks);
     }
 

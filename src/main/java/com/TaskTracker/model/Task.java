@@ -34,7 +34,7 @@ public class Task {
     private boolean isTemplate = false;
 
     @Column(nullable = false)
-    private Integer userId = 0; //for later, when adding user accounts
+    private String username;
 
     //optional columns
 

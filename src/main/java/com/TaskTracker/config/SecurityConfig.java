@@ -1,54 +1,75 @@
-/*
-
 package com.TaskTracker.config;
 
+import com.TaskTracker.filter.JwtRequestFilter;
+import com.TaskTracker.service.MyUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.cors.CorsConfigurationSource;
-
-import java.util.Arrays;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
+    @Autowired
+    private JwtRequestFilter jwtRequestFilter;
+
+    @Autowired
+    private MyUserDetailsService myUserDetailsService;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/h2-console/**", "/api/tasks/**")) // Disable CSRF only for H2 console
-
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Apply CORS configuration
+                .csrf(csrf -> csrf.disable()) // Disable CSRF protection for JWT-based security
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // No session, we're stateless
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/tasks/**").permitAll() // Allow public access to the /hello endpoint
-                        .requestMatchers("/h2-console/**").permitAll() // Allow access to H2 console
-                        .requestMatchers("/hello").permitAll() // Allow public access to the /hello endpoint
-                        .anyRequest().authenticated()) // Require authentication for other requests
-                .headers(headers -> headers
-                        .frameOptions(frameOptions -> frameOptions.sameOrigin())); // Updated frame options for H2
+                        .requestMatchers("/api/auth/login", "/api/auth/register").permitAll() // Permit login and register
+                        .requestMatchers("/h2-console/**").permitAll() // Permit H2 console access
+                        .requestMatchers("/", "/index.html", "/static/**", "/favicon.ico").permitAll()
+                        .anyRequest().authenticated()) // Secure all other endpoints
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class); // Add the JWT filter
 
         return http.build();
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:3000/viewTasks")); // Allow React app origin
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+        AuthenticationManagerBuilder authenticationManagerBuilder =
+                http.getSharedObject(AuthenticationManagerBuilder.class);
+        authenticationManagerBuilder.userDetailsService(myUserDetailsService).passwordEncoder(passwordEncoder());
+        return authenticationManagerBuilder.build();
+    }
 
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
-        configuration.setAllowCredentials(true); // Allow credentials
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new org.springframework.web.cors.CorsConfiguration();
+        configuration.setAllowCredentials(true); // Allow credentials (cookies, authorization headers, etc.)
+        configuration.addAllowedOrigin("http://localhost:3000"); // Replace with your frontend URL
+        configuration.addAllowedOrigin("http://localhost:8080"); // Replace with your frontend URL
+        configuration.addAllowedHeader("*"); // Allow all headers
+        configuration.addAllowedMethod("*"); // Allow all HTTP methods (GET, POST, etc.)
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/**", configuration); // Apply configuration to all endpoints
         return source;
     }
+
 }
-
-
- */
