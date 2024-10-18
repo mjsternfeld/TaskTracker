@@ -60,10 +60,9 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new org.springframework.web.cors.CorsConfiguration();
+        CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true); // Allow credentials (cookies, authorization headers, etc.)
-        configuration.addAllowedOrigin("http://localhost:3000"); // Replace with your frontend URL
-        configuration.addAllowedOrigin("http://localhost:8080"); // Replace with your frontend URL
+        configuration.addAllowedOriginPattern("*"); // Replace with your frontend URL
         configuration.addAllowedHeader("*"); // Allow all headers
         configuration.addAllowedMethod("*"); // Allow all HTTP methods (GET, POST, etc.)
 
