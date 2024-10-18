@@ -10,6 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-
+    //used to access the app_users table in the DB
     Optional<User> findByUsername(String username);
 }

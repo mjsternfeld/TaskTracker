@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+//the main data type of this app
+
 @Entity
 @Data
 @AllArgsConstructor

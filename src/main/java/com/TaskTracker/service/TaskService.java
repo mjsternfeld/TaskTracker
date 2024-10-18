@@ -50,23 +50,13 @@ public class TaskService {
 
 
     //create
-
+    //also associates task with the user
     public Task saveTask(Task task, String username){
-        //manually set subtask's references to their parent task
         task.setUsername(username);
+        //manually set subtask's references to their parent task
         for(Subtask subtask : task.getSubtasks())
             subtask.setParentTask(task);
         return taskRepo.save(task);
-    }
-
-    public List<Task> saveTasks(List<Task> tasks, String username){
-        //manually set subtask's references to their parent tasks
-        for(Task task : tasks) {
-            task.setUsername(username);
-            for (Subtask subtask : task.getSubtasks())
-                subtask.setParentTask(task);
-        }
-        return taskRepo.saveAll(tasks);
     }
 
 

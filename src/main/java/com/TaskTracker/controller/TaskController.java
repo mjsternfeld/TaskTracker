@@ -15,6 +15,8 @@ import java.util.Optional;
 @RequestMapping("/api/tasks")
 public class TaskController {
 
+    //this is used to handle requests related to (normal) tasks (and subtasks, but only in relation to normal tasks) and task templates (CRUD)
+
     @Autowired
     public TaskService service;
 
@@ -22,6 +24,7 @@ public class TaskController {
     public JwtUtil jwtUtil;
 
 
+    //helper method to extract username from JWT
     public String getUsernameFromAuthHeader(String authHeader){
         String token = authHeader.substring(7); //remove "Bearer" prefix
         return jwtUtil.extractUsername(token);
@@ -29,6 +32,7 @@ public class TaskController {
 
 
     //create
+    //creates a row in the tasks (and subtasks, if applicable) table,
     @PostMapping
     public ResponseEntity<Task> createTask(@RequestBody Task task, @RequestHeader("Authorization") String authHeader) {
         String username = getUsernameFromAuthHeader(authHeader);
@@ -37,12 +41,14 @@ public class TaskController {
     }
 
     //read
+    //returns all tasks associated with the user
     @GetMapping
     public ResponseEntity<List<Task>> getAllTasks(@RequestHeader("Authorization") String authHeader) {
         String username = getUsernameFromAuthHeader(authHeader);
         return ResponseEntity.ok(service.getAllTasks(username));
     }
 
+    //returns all templates associated with the user
     @GetMapping("/templates")
     public ResponseEntity<List<Task>> getAllTemplates(@RequestHeader("Authorization") String authHeader) {
         String username = getUsernameFromAuthHeader(authHeader);

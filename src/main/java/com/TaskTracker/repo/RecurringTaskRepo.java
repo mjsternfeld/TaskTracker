@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RecurringTaskRepo extends JpaRepository<RecurringTask, Integer> {
-
+    //used to access the recurring_tasks table in the DB
 }

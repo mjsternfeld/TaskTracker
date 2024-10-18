@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import jakarta.persistence.*;
 
+//userdata, contains username (ID) and password (hashed)
 
 @Entity
 @Data

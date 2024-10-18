@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+//these are always dependent on / part of a parent task
+
 @Entity
 @Data
 @AllArgsConstructor

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+//this is used to access user data from the app_users table
 @Service
 public class MyUserDetailsService implements UserDetailsService {
 

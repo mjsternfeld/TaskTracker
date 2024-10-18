@@ -23,28 +23,29 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     @Autowired
-    private JwtRequestFilter jwtRequestFilter;
+    private JwtRequestFilter jwtRequestFilter; //to filter http requests / require them to contain JWTs in the Authorization header
 
     @Autowired
-    private MyUserDetailsService myUserDetailsService;
+    private MyUserDetailsService myUserDetailsService; //for fetching usernames and matching passwords
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception { //http filter properties
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Apply CORS configuration
-                .csrf(csrf -> csrf.disable()) // Disable CSRF protection for JWT-based security
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) //to prevent CORS errors / allow the app to work in LAN
+                .csrf(csrf -> csrf.disable()) //disable CSRF (not necessary since we're using JWTs and not cookies)
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // No session, we're stateless
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //no sessions, the app is stateless
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/auth/login", "/api/auth/register").permitAll() // Permit login and register
-                        .requestMatchers("/h2-console/**").permitAll() // Permit H2 console access
-                        .requestMatchers("/", "/index.html", "/static/**", "/favicon.ico").permitAll()
-                        .anyRequest().authenticated()) // Secure all other endpoints
-                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class); // Add the JWT filter
+                        .requestMatchers("/api/auth/login", "/api/auth/register").permitAll() //allow authentication
+                        .requestMatchers("/h2-console/**").permitAll() //allow H2 console access
+                        .requestMatchers("/", "/index.html", "/static/**", "/favicon.ico").permitAll() //allow access to frontend (homepage and rest of the app) and the favicon
+                        .anyRequest().authenticated()) //secure all other endpoints
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class); //add the JWT filter
 
         return http.build();
     }
 
+    //this is used for user authentication, specifically password hashing and matching
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder =
@@ -53,6 +54,7 @@ public class SecurityConfig {
         return authenticationManagerBuilder.build();
     }
 
+    //password hasher
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -61,13 +63,13 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowCredentials(true); // Allow credentials (cookies, authorization headers, etc.)
-        configuration.addAllowedOriginPattern("*"); // Replace with your frontend URL
-        configuration.addAllowedHeader("*"); // Allow all headers
-        configuration.addAllowedMethod("*"); // Allow all HTTP methods (GET, POST, etc.)
+        configuration.setAllowCredentials(true); //allow credentials (specifically, JWTs in the Authorization header)
+        configuration.addAllowedOriginPattern("*"); //allow access from everywhere on the LAN
+        configuration.addAllowedHeader("*"); //allow all headers
+        configuration.addAllowedMethod("*"); //allow all HTTP methods
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration); // Apply configuration to all endpoints
+        source.registerCorsConfiguration("/**", configuration); //apply configuration to all endpoints
         return source;
     }
 

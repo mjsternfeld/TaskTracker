@@ -6,7 +6,7 @@ import org.springframework.context.annotation.PropertySource;
 
 
 @SpringBootApplication
-@PropertySource("classpath:secret.properties")
+@PropertySource("classpath:secret.properties") //contains the secret key for the JWT / password encryption
 public class TaskTrackerApplication {
 
 	public static void main(String[] args) {

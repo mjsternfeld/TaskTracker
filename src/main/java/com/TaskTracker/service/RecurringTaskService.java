@@ -9,7 +9,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import com.TaskTracker.model.RecurringTask;
 
-import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -19,6 +18,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class RecurringTaskService {
+    //this is used to access the recurring_tasks table (CRUD), as well as automatically adding recurring tasks to the normal task table
 
     @Autowired
     private TaskRepo taskRepo;
@@ -29,7 +29,7 @@ public class RecurringTaskService {
     public void processRecurringTasks() {
 
         List<RecurringTask> unfilteredTasks = recTaskRepo.findAll();
-        //filter by nextOccurence [before] now, i.e., all the tasks that should've been started by now
+        //filter by nextOccurrence [before] now, i.e., all the tasks that should've started by now
         List<RecurringTask> recurringTasks = unfilteredTasks.stream()
                 .filter(recurringTask -> LocalDateTime.now().isAfter(recurringTask.getNextOccurrence()))
                 .toList();
@@ -61,11 +61,12 @@ public class RecurringTaskService {
 
     //create
     public RecurringTask saveRecTask(RecurringTask rt, String username){
-        rt.setUsername(username);
+        rt.setUsername(username); //associate task with the user
         return recTaskRepo.save(rt);
     }
 
     //read
+    //returns all recTasks associated with the user
     public List<RecurringTask> getAllRecTasks(String username) {
         List<RecurringTask> unfilteredList = recTaskRepo.findAll();
         return unfilteredList.stream()

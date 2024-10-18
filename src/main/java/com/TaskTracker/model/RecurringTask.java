@@ -10,6 +10,9 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.time.Period;
 
+//class that defines the recurringTasks datatype used in the recurring_tasks table
+//these are automatically added as active to the normal task table, depending on the repeat interval and starting date
+
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data

@@ -6,16 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
 public class UserService {
 
+    //used to access the user table
+
     @Autowired
     private UserRepository repo;
 
-    public void registerUser(String username, String password) {
+    //creates a user entry with the username and (hashed) password
+    public User registerUser(String username, String password) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String hashedPassword = encoder.encode(password);
 
@@ -23,7 +25,7 @@ public class UserService {
         user.setUsername(username);
         user.setPassword(hashedPassword);
 
-        repo.save(user);
+        return repo.save(user);
     }
 
     public User findByUsername(String username) {
@@ -33,8 +35,4 @@ public class UserService {
         return user.get();
     }
 
-    public boolean checkPassword(String rawPassword, String hashedPassword) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        return encoder.matches(rawPassword, hashedPassword);
-    }
 }

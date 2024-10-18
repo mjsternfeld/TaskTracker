@@ -13,20 +13,20 @@ import java.util.Map;
 @Component
 public class JwtUtil {
 
-    @Value("${jwt.secret}")
+    @Value("${jwt.secret}") //attribute contained in /src/main/resources/secret.properties (not contained in git repo)
     private String SECRET_KEY;
 
-    // Extract the username (or subject) from the JWT token
+    //get username from token
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    // Extract expiration date from the JWT token
+    //get expiration date from token
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    // Extract any claim from the JWT token
+    //extract any claim from the JWT token
     public <T> T extractClaim(String token, java.util.function.Function<Claims, T> claimsResolver) {
         final Claims claims = Jwts.parser()
                 .setSigningKey(SECRET_KEY)
@@ -35,12 +35,12 @@ public class JwtUtil {
         return claimsResolver.apply(claims);
     }
 
-    // Check if the token has expired
+    //check if the token has expired
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
-    // Generate the JWT token with the username
+    //generate the JWT token with the username
     public String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
         return Jwts.builder()
@@ -52,7 +52,7 @@ public class JwtUtil {
                 .compact();
     }
 
-    // Validate the token by checking username and expiration
+    //validate the token by checking username and expiration
     public Boolean validateToken(String token, String username) {
         final String extractedUsername = extractUsername(token);
         return (extractedUsername.equals(username) && !isTokenExpired(token));

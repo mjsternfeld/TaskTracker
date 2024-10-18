@@ -15,12 +15,15 @@ import java.util.List;
 @RequestMapping("/api/recurring-tasks")
 public class RecurringTaskController {
 
+    //this is used to handle requests related to recurring tasks (CRUD)
+
     @Autowired
     private RecurringTaskService service;
 
     @Autowired
     public JwtUtil jwtUtil;
 
+    //helper method to extract username from JWT to allow filtering tasks by username
     public String getUsernameFromAuthHeader(String authHeader){
         String token = authHeader.substring(7); //remove "Bearer" prefix
         return jwtUtil.extractUsername(token);
@@ -29,12 +32,13 @@ public class RecurringTaskController {
     //create
     @PostMapping
     public ResponseEntity<RecurringTask> createRecurringTask(@RequestBody RecurringTask rt, @RequestHeader("Authorization") String authHeader) {
-        String username = getUsernameFromAuthHeader(authHeader);
+        String username = getUsernameFromAuthHeader(authHeader); //add username to the task before saving in the DB
         RecurringTask savedTask = service.saveRecTask(rt, username);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedTask); // Returns 201 Created
     }
 
     //read
+    //returns all recurring tasks associated with the user
     @GetMapping
     public ResponseEntity<List<RecurringTask>> getAllRecurringTasks(@RequestHeader("Authorization") String authHeader) {
         String username = getUsernameFromAuthHeader(authHeader);

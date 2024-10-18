@@ -2,6 +2,7 @@ package com.TaskTracker.controller;
 
 import com.TaskTracker.model.User;
 import com.TaskTracker.repo.UserRepository;
+import com.TaskTracker.service.UserService;
 import com.TaskTracker.util.AuthenticationRequest;
 import com.TaskTracker.util.AuthenticationResponse;
 import com.TaskTracker.util.JwtUtil;
@@ -19,85 +20,75 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
+//this contains the handlers for login / register requests
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
     @Autowired
-    private AuthenticationManager authenticationManager;
+    private AuthenticationManager authenticationManager; //defined in the SecurityConfig
 
     @Autowired
-    private PasswordEncoder passwordEncoder; // Injecting PasswordEncoder
+    private PasswordEncoder passwordEncoder; //defined in the SecurityConfig
 
     @Autowired
-    private JwtUtil jwtUtil;
+    private JwtUtil jwtUtil; //used to handle the JWTs
 
     @Autowired
-    private UserRepository repo;
+    private UserService service;
 
 
+
+
+    //sent from the login homepage. Request contains username and password
     @PostMapping("/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) {
+        //extract fields from the request body
         String username = authenticationRequest.getUsername();
         String rawPassword = authenticationRequest.getPassword();
 
-        // Fetch the user from the repository
-        Optional<User> userOpt = repo.findByUsername(username);
 
-        if (userOpt.isEmpty()) {
-            // Return 404 Not Found if the username does not exist
+        //try fetching the user info from the repository
+        User user = service.findByUsername(username);
+        if (user == null) //return 404, Username not found
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Username doesn't exist");
-        }
+            //this ensures the user is defined
 
-        User user = userOpt.get();
 
-        // Use PasswordEncoder to check password match
-        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
-            // Return 401 Unauthorized if the password is incorrect
+        //check if password is incorrect and return 401 unauthorized
+        if (!passwordEncoder.matches(rawPassword, user.getPassword()))
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect password");
-        }
 
-        // Authenticate user with Spring Security
+        //authenticate user with Spring Security
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, rawPassword)
         );
 
-        // Generate the JWT token
+        //generate the JWT
         final String jwt = jwtUtil.generateToken(username);
 
-        // Return 200 OK with the JWT token
+        //return JWT with 200 OK
         return ResponseEntity.ok(new AuthenticationResponse(jwt));
     }
 
-
-
-
-
-
+    //sent from the login homepage. Request contains username and password
     @PostMapping("/register")
     public ResponseEntity<?> createUserAccount(@RequestBody AuthenticationRequest authenticationRequest) {
+        //extract fields from the request body
         String username = authenticationRequest.getUsername();
         String rawPassword = authenticationRequest.getPassword();
 
-        // Check for existing username
-        if (repo.findByUsername(username).isPresent()) {
+        //check if username is present
+        if (service.findByUsername(username) != null)
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Username already exists");
-        }
 
-        // Hash the password using PasswordEncoder
-        String hashedPassword = passwordEncoder.encode(rawPassword);
 
-        // Create and save new user
-        User newUser = new User();
-        newUser.setUsername(username);
-        newUser.setPassword(hashedPassword);
-        repo.save(newUser);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body("User created successfully");
+        User savedUser = service.registerUser(username, rawPassword);
+        if(savedUser != null)
+            return ResponseEntity.status(HttpStatus.CREATED).body("User created successfully");
+        else
+            return ResponseEntity.status(HttpStatus.I_AM_A_TEAPOT).body("This should not happen actually");
     }
-
-
-
-
 
 }

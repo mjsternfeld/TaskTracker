@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SubtaskRepo extends JpaRepository<Subtask, Integer> {
-
+    //used to access the subtask table in the DB
 }
